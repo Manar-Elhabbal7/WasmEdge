@@ -14,6 +14,7 @@
 #pragma once
 
 #include "common/filesystem.h"
+#include "common/fmt.h"
 #include "common/int128.h"
 #define SPDLOG_NO_EXCEPTIONS 1
 #include "spdlog/spdlog.h"
@@ -49,8 +50,9 @@ void setLoggingCallback(
 template <>
 struct fmt::formatter<std::filesystem::path>
     : fmt::formatter<std::string_view> {
-  fmt::format_context::iterator format(const std::filesystem::path &Path,
-                                       fmt::format_context &Ctx) const {
+  template <typename FmtCtx>
+  auto format(const std::filesystem::path &Path, FmtCtx &Ctx) WASMEDGE_FMT_CONST
+      -> decltype(Ctx.out()) {
     // mimic std::quoted
     constexpr const char Delimiter = '"';
     constexpr const char Escape = '\\';
